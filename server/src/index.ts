@@ -9,9 +9,7 @@ import { typeDefs, resolvers } from './graphql';
 const mount = async (app: Application) => {
     const db = await connectDatabase();
     const server = new ApolloServer({
-        typeDefs,
-        resolvers,
-        context: () => ({ db }),
+        typeDefs, resolvers, context: () => ({ db }),
     });
 
     server.applyMiddleware({ app, path: '/api' });
