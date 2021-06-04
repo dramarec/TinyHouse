@@ -8,7 +8,7 @@ export const listingResolvers: IResolvers = {
       _args: Record<string, never>,
       { db }: { db: Database }
     ): Promise<Listing[]> => {
-
+      throw new Error('ERRORRrrr');
       return await db.listings.find({}).toArray();
     }
   },
