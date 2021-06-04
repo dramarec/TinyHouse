@@ -4,7 +4,7 @@ import {
     DeleteListingData,
     DeleteListingVariables,
     ListingsData,
-    Listing,
+    // Listing,
 } from "./types";
 
 const LISTINGS = `
@@ -37,8 +37,7 @@ interface Props {
 }
 
 export const Listings = ({ title }: Props) => {
-    //custom hook
-    const { data } = useQuery<ListingsData>(LISTINGS);
+    const { data, refetch } = useQuery<ListingsData>(LISTINGS);
 
     const deleteListing = async (id: string) => {
         await server
@@ -48,6 +47,7 @@ export const Listings = ({ title }: Props) => {
                     id
                 }
             });
+        refetch();
     };
 
     const listings = data ? data.listings : null;
