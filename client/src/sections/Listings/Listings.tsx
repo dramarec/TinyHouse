@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { server } from "../../api";
 import {
     DeleteListingData,
     DeleteListingVariables,
-    ListingsData
+    ListingsData,
+    Listing,
 } from "./types";
 
 const LISTINGS = `
@@ -36,27 +37,49 @@ interface Props {
 }
 
 export const Listings = ({ title }: Props) => {
+    const [listings, setListings] = useState<Listing[] | null>(null);
+
     const fetchListings = async () => {
-        const { data } = await server.fetch<ListingsData>({ query: LISTINGS });
+        const { data } = await server
+            .fetch<ListingsData>({
+                query: LISTINGS
+            });
         console.log(data); // check the console to see the listings data from our GraphQL Request!
+        setListings(data.listings);
+
     };
 
-    const deleteListing = async () => {
+    const deleteListing = async (id: string) => {
         const { data } = await server
             .fetch<DeleteListingData, DeleteListingVariables>({
                 query: DELETE_LISTING,
                 variables: {
-                    id: "607a5a5377e71852e274623d" // hardcoded id variable,
+                    id // hardcoded id variable,
                 }
             });
-        console.log(data); // check the console to see the result of the mutation!
+        console.log(data);
+        fetchListings();
+        // check the console to see the result of the mutation!
     };
+
+    const listingsList = listings ? (
+        <ul>
+            {listings.map(listing => {
+                return (
+                    <li key={listing.id}>
+                        {listing.title}
+                        <button onClick={() => deleteListing(listing.id)}>Delete</button>
+                    </li>
+                )
+            })}
+        </ul>
+    ) : null;
 
     return (
         <div>
             <h2>{title}</h2>
+            {listingsList}
             <button onClick={fetchListings}>Query Listings!</button>
-            <button onClick={deleteListing}>Delete a listing!</button>
         </div>
     );
 };
