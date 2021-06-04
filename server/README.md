@@ -30,6 +30,11 @@ npm install -D @types/graphql
 ### MongoDB
 npm install mongodb
 npm install -D @types/mongodb
+
+npm install -D dotenv @types/dotenv
+
+npm install lodash.merge
+npm install -D @types/lodash.merge
 ```
 > graphQL 
 - **`obj`** - the object returned from the resolver on the parent field. For root `Query` and `Mutation` object types, this argument is often not used and undefined.

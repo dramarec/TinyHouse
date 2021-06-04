@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { MongoClient } from "mongodb";
-import { Database } from "../lib/types";
 import dotenv from "dotenv"
 dotenv.config();
+
+import { MongoClient } from "mongodb";
+import { Database } from "../lib/types";
 
 const user = process.env.DB_USER;
 const userPassword = process.env.DB_USER_PASSWORD;
