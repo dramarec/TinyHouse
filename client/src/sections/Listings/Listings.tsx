@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { server } from "../../api";
+// import React, { useState, useEffect } from "react";
+import { server, useQuery } from "../../api";
 import {
     DeleteListingData,
     DeleteListingVariables,
@@ -37,30 +37,20 @@ interface Props {
 }
 
 export const Listings = ({ title }: Props) => {
-    const [listings, setListings] = useState<Listing[] | null>(null);
-
-    const fetchListings = async () => {
-        const { data } = await server
-            .fetch<ListingsData>({
-                query: LISTINGS
-            });
-        console.log(data); // check the console to see the listings data from our GraphQL Request!
-        setListings(data.listings);
-
-    };
+    //custom hook
+    const { data } = useQuery<ListingsData>(LISTINGS);
 
     const deleteListing = async (id: string) => {
-        const { data } = await server
+        await server
             .fetch<DeleteListingData, DeleteListingVariables>({
                 query: DELETE_LISTING,
                 variables: {
-                    id // hardcoded id variable,
+                    id
                 }
             });
-        console.log(data);
-        fetchListings();
-        // check the console to see the result of the mutation!
     };
+
+    const listings = data ? data.listings : null;
 
     const listingsList = listings ? (
         <ul>
@@ -79,7 +69,6 @@ export const Listings = ({ title }: Props) => {
         <div>
             <h2>{title}</h2>
             {listingsList}
-            <button onClick={fetchListings}>Query Listings!</button>
         </div>
     );
 };
