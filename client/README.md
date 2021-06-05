@@ -5,6 +5,7 @@
 
 ```shell
 npx create-react-app my-app --template typescript
-npm install / yarn add apollo-boost @apollo/react-hooks graphql
+npm install / yarn add @apollo/client graphql
+
 
 ```
