@@ -1,11 +1,8 @@
-// import React, { useState, useEffect } from "react";
 import { gql, useQuery, useMutation } from '@apollo/client'
-// import { useQuery, useMutation } from "../../api";
 import {
     DeleteListingData,
     DeleteListingVariables,
     ListingsData,
-    // Listing,
 } from "./types";
 
 const LISTINGS = gql`
