@@ -1,13 +1,26 @@
-import React from 'react';
 import { render } from 'react-dom';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
 import { Listings } from "./sections";
 import reportWebVitals from './reportWebVitals';
 
+const cache = new InMemoryCache({
+    typePolicies: {
+        Query: {
+            fields: {
+                project: {
+                    merge(existing, incoming) {
+                        return incoming
+                    }
+                }
+            }
+        }
+    }
+})
+
 const client = new ApolloClient({
-    cache: new InMemoryCache(),
     uri: "/api",
+    cache,
 });
 
 render(
