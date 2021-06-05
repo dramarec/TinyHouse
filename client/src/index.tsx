@@ -5,20 +5,21 @@ import { Listings } from "./sections";
 import reportWebVitals from './reportWebVitals';
 
 const cache = new InMemoryCache({
-    typePolicies: {
-        Query: {
-            fields: {
-                project: {
-                    merge(existing, incoming) {
-                        return incoming
-                    }
-                }
-            }
-        }
-    }
+    // typePolicies: {
+    //     Listings: {
+    //         fields: {
+    //             listings: {
+    //                 merge(existing = [], incoming: any[]) {
+    //                     return [...existing, ...incoming];
+    //                 },
+    //             }
+    //         }
+    //     }
+    // }
 })
 
 const client = new ApolloClient({
+    connectToDevTools: true,
     uri: "/api",
     cache,
 });

@@ -24,7 +24,6 @@ npm install / yarn add @apollo/client graphql
     // ...
 }
 ```
-[](public/assets/apollo-client-codegen-schema.png)
 
 ```shell
     yarn codegen:schema
