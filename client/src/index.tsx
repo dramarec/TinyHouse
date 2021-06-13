@@ -16,6 +16,32 @@ const cache = new InMemoryCache({
     //         }
     //     }
     // }
+    // typePolicies: {
+    //     Query: {
+    //         fields: {
+    //             Listings: {
+    //                 merge(existing = [], incoming: any) {
+    //                     return { ...existing, ...incoming };
+    //                     // this part of code is depends what you actually need to do, in my 
+    //                     // case i had to save my incoming data as single object in cache
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // typePolicies: {
+    //     Query: {
+    //         Part: {
+    //             parts: {
+    //                 fields: {
+    //                     merge(existing, incoming) {
+    //                         return incoming;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 })
 
 const client = new ApolloClient({
