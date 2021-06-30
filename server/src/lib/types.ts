@@ -32,7 +32,7 @@ export interface Listing {
     bookings: ObjectId[];
     bookingsIndex: BookingsIndex;
     price: number;
-
+    numOfGuests: number;
 }
 // export interface Listing {
 //   _id: ObjectId;
