@@ -3,6 +3,7 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
 import { Listings } from "./sections";
 import reportWebVitals from './reportWebVitals';
+import "./styles/index.css";
 
 const cache = new InMemoryCache({
     // typePolicies: {

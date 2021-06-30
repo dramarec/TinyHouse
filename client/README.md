@@ -4,14 +4,15 @@
 -   yarn start
 
 ```shell
-npx create-react-app my-app --template typescript
-npm install / yarn add @apollo/client graphql
-npm install antd
+-   npx create-react-app my-app --template typescript
+-   npm install / yarn add @apollo/client graphql
+-   npm install antd /  yarn add antd
 
 ```
 
--   [Apollo CLI](https://github.com/apollographql/apollo-tooling) 
-> can help generate client-side types for many different languages like TypeScript, Swift, Java, C#, etc.
+-   [Apollo CLI](https://github.com/apollographql/apollo-tooling)
+    > can help generate client-side types for many different languages like
+    > TypeScript, Swift, Java, C#, etc.
 
 ```json
 {
