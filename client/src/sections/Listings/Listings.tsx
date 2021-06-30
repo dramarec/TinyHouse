@@ -75,23 +75,6 @@ export const Listings = ({ title }: Props) => {
         />
     ) : null;
 
-    // const listingsList = listings ? (
-    //     <ul>
-    //         {listings.map(listing => {
-    //             return (
-    //                 <li key={listing.id}>
-    //                     {listing.title}
-    //                     <button onClick={() => handleDeleteListing(listing.id)}>Delete</button>
-    //                 </li>
-    //             )
-    //         })}
-    //     </ul>
-    // ) : null;
-
-    // if (!loading) {
-    //     return <h2>Loading....</h2>
-    // }
-
     if (loading) {
         return (
             <div className="listings">
@@ -99,9 +82,7 @@ export const Listings = ({ title }: Props) => {
             </div>
         );
     }
-    // if (error) {
-    //     return <h2>Uh oh! Something went wrong - please try again later! </h2>;
-    // }
+
     if (error) {
         return (
             <div className="listings">
@@ -109,18 +90,6 @@ export const Listings = ({ title }: Props) => {
             </div>
         );
     }
-
-    // const deleteListingLoadingMessage = deleteListingLoading ? (
-    //     <h4>
-    //         Deletion in progress...
-    //     </h4>
-    // ) : null;
-
-    // const deleteListingErrorMessage = deleteListingError ? (
-    //     <h4>
-    //         Uh oh! Something went wrong with deleting. Please try again soon.
-    //     </h4>
-    // ) : null;
 
     const deleteListingErrorAlert = deleteListingError ? (
         <Alert
@@ -138,11 +107,5 @@ export const Listings = ({ title }: Props) => {
                 {listingsList}
             </Spin>
         </div>
-        // <div className='listings'>
-        //     <h2>{title}</h2>
-        //     {listingsList}
-        //     {deleteListingLoadingMessage}
-        //     {deleteListingErrorMessage}
-        // </div>
     );
 };
