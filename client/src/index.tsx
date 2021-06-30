@@ -1,13 +1,60 @@
-import React from 'react';
 import { render } from 'react-dom';
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+
 import { Listings } from "./sections";
 import reportWebVitals from './reportWebVitals';
 
+const cache = new InMemoryCache({
+    // typePolicies: {
+    //     Listings: {
+    //         fields: {
+    //             listings: {
+    //                 merge(existing = [], incoming: any[]) {
+    //                     return [...existing, ...incoming];
+    //                 },
+    //             }
+    //         }
+    //     }
+    // }
+    // typePolicies: {
+    //     Query: {
+    //         fields: {
+    //             Listings: {
+    //                 merge(existing = [], incoming: any) {
+    //                     return { ...existing, ...incoming };
+    //                     // this part of code is depends what you actually need to do, in my 
+    //                     // case i had to save my incoming data as single object in cache
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    // typePolicies: {
+    //     Query: {
+    //         Part: {
+    //             parts: {
+    //                 fields: {
+    //                     merge(existing, incoming) {
+    //                         return incoming;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+})
+
+const client = new ApolloClient({
+    connectToDevTools: true,
+    uri: "/api",
+    cache,
+});
+
 render(
-  <React.StrictMode>
-    <Listings title="TinyHouse Listings" />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <ApolloProvider client={client}>
+        <Listings title="TinyHouse Listings" />
+    </ApolloProvider>,
+    document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function
