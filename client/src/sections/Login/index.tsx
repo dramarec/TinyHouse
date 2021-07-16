@@ -1,12 +1,16 @@
 import React, { useEffect, useRef } from "react";
+import { Redirect } from "react-router-dom";
 import { Card, Layout, Spin, Typography } from "antd";
 import { useApolloClient, useMutation } from "@apollo/client";
 
-import { Viewer } from "../../lib/types"
-import { LOG_IN } from "../../lib/graphql/mutations"
-import { LogIn as LogInData, LogInVariables } from "../../lib/graphql/mutations/LogIn/__generated__/LogIn";
 import { AUTH_URL } from "../../lib/graphql/queries";
+import { LOG_IN } from "../../lib/graphql/mutations"
 import { AuthUrl as AuthUrlData } from "../../lib/graphql/queries/AuthUrl/__generated__/AuthUrl";
+import { LogIn as LogInData, LogInVariables } from "../../lib/graphql/mutations/LogIn/__generated__/LogIn";
+
+import { Viewer } from "../../lib/types"
+import { ErrorBanner } from "../../lib/components";
+import { displaySuccessNotification, displayErrorMessage } from "../../lib/utils";
 
 // Image Assets
 import googleLogo from "./assets/google_logo.jpg";
@@ -27,6 +31,7 @@ export const Login = ({ setViewer }: Props) => {
         onCompleted: data => {
             if (data && data.logIn) {
                 setViewer(data.logIn);
+                displaySuccessNotification("You've successfully logged in!");
             }
         }
     });
@@ -51,8 +56,8 @@ export const Login = ({ setViewer }: Props) => {
             })
             window.location.href = data.authUrl;
 
-        } catch (error) {
-            console.log(error)
+        } catch {
+            displayErrorMessage("Sorry! We weren't able to log you in. Please try again later!");
         }
     }
 
@@ -64,8 +69,20 @@ export const Login = ({ setViewer }: Props) => {
         )
     }
 
+    if (logInData && logInData.logIn) {
+        const { id: viewerId } = logInData.logIn;
+        return <Redirect to={`/user/${viewerId}`} />;
+    }
+
+    const logInErrorBannerElement =
+        logInError
+            ? (<ErrorBanner description="Sorry! We weren't able to log you in. Please try again later!" />)
+            : null;
+
     return (
         <Content className="log-in">
+            {logInErrorBannerElement}
+
             <Card className="log-in-card">
                 <div className="log-in-card__intro">
                     <Title level={3} className="log-in-card__intro-title">
@@ -91,6 +108,7 @@ export const Login = ({ setViewer }: Props) => {
                     with your Google account.
                 </Text>
             </Card>
+
         </Content>
     );
 };
