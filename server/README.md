@@ -37,6 +37,11 @@ npm install -D dotenv @types/dotenv
 
 npm install lodash.merge
 npm install -D @types/lodash.merge
+### Google
+npm install googleapis
+[Google APIs Node.js Client](https://github.com/googleapis/google-api-nodejs-client)
+[googlescopes](https://developers.google.com/identity/protocols/googlescopes)
+[google.people](https://developers.google.com/people/api/rest/v1/people/get)
 ```
 
 > graphQL

@@ -1,5 +1,13 @@
 import { Collection, ObjectId } from 'mongodb';
 
+export interface Viewer {
+    _id?: string;
+    token?: string;
+    avatar?: string;
+    walletId?: string;
+    didRequest: boolean;
+}
+
 // Listing types
 export enum ListingType {
     Apartment = "APARTMENT",
@@ -34,17 +42,6 @@ export interface Listing {
     price: number;
     numOfGuests: number;
 }
-// export interface Listing {
-//   _id: ObjectId;
-//   title: string;
-//   image: string;
-//   address: string;
-//   price: number;
-//   numOfGuests: number;
-//   numOfBeds: number;
-//   numOfBaths: number;
-//   rating: number;
-// }
 
 // User types
 export interface User {
