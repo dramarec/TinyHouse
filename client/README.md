@@ -31,3 +31,15 @@
     yarn codegen:schema
     yarn codegen:generate
 ```
+
+```json
+{
+    // ...
+    "scripts": {
+        // ...
+        "codegen:schema": "npx apollo client:download-schema --endpoint=http://localhost:9000/api",
+        "codegen:generate": "npx apollo client:codegen --localSchemaFile=schema.json --includes=src/**/*.ts --globalTypesFile=./src/lib/graphql/globalTypes.ts --target=typescript"
+    }
+    // ...
+}
+```
