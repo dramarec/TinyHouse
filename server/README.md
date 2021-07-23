@@ -39,6 +39,7 @@ npm install lodash.merge
 npm install -D @types/lodash.merge
 ### Google
 npm install googleapis
+[google.cloud.platform](https://console.cloud.google.com/)
 [Google APIs Node.js Client](https://github.com/googleapis/google-api-nodejs-client)
 [googlescopes](https://developers.google.com/identity/protocols/googlescopes)
 [google.people](https://developers.google.com/people/api/rest/v1/people/get)
@@ -55,3 +56,15 @@ npm install googleapis
 -   **`info`** - used usually only in advanced cases but contains information
     about the _execution_ state of the query - such as the `fieldName`,
     `schema`, `rootValue`, etc.
+
+> Cookie
+
+[Local Storage vs. Session Storage vs. Cookie](https://ru.hexlet.io/blog/posts/lokalnoe-hranilische-vs-sessionnoe-hranilische-vs-cookie)
+
+[`cookie-parser`](https://github.com/expressjs/cookie-parser)
+
+```shell
+npm install cookie-parser
+npm install -D @types/cookie-parser
+
+```

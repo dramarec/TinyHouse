@@ -1,6 +1,5 @@
 import { google } from "googleapis";
 
-// console.log("🔥🚀 ===> process.env.G_CLIENT_ID", process.env.PUBLIC_URL);
 const auth = new google.auth.OAuth2(
     process.env.G_CLIENT_ID,
     process.env.G_CLIENT_SECRET,
@@ -15,8 +14,7 @@ export const Google = {
             "https://www.googleapis.com/auth/userinfo.profile"
         ]
     }),
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    logIn: async (code: string) => { 
+    logIn: async (code: string) => {
         const { tokens } = await auth.getToken(code);
 
         auth.setCredentials(tokens);

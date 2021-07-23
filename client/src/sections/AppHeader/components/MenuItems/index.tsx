@@ -18,8 +18,9 @@ const { Item, SubMenu } = Menu;
 export const MenuItems = ({ viewer, setViewer }: Props) => {
     const [logOut] = useMutation<LogOutData>(LOG_OUT, {
         onCompleted: data => {
-            if (data && data.logOut) {
+            if (data.logOut) {
                 setViewer(data.logOut);
+                sessionStorage.removeItem("token");
                 displaySuccessNotification("You've successfully logged out!");
             }
         },
@@ -37,7 +38,7 @@ export const MenuItems = ({ viewer, setViewer }: Props) => {
     const subMenuLogin =
         viewer.id && viewer.avatar ? (
             <>
-                <SubMenu icon={<Avatar src={viewer.avatar} />}>
+                <SubMenu key="sub1" icon={<Avatar src={viewer.avatar} />}>
 
                     <Menu.Item key="/user">
                         <Link to={`/user/${viewer.id}`}>
