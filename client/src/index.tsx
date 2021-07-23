@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, useMutation } from '@apollo/client';
+import { HttpLink, ApolloClient, ApolloProvider, InMemoryCache, useMutation } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+
 import { Affix, Spin, Layout } from 'antd'
 
 import { LOG_IN } from "./lib/graphql/mutations";
@@ -15,9 +17,23 @@ import reportWebVitals from './reportWebVitals';
 import "./styles/index.css";
 import { AppHeaderSkeleton, ErrorBanner } from "./lib/components";
 
+const httpLink = new HttpLink({
+    uri: "/api"
+});
+
+const authLink = setContext(async (_, { headers }) => {
+    const token = sessionStorage.getItem("token");
+    return {
+        headers: {
+            ...headers,
+            "X-CSRF-TOKEN": token || ""
+        },
+    };
+});
+
 const client = new ApolloClient({
     // connectToDevTools: true,
-    uri: "/api",
+    link: authLink.concat(httpLink),
     cache: new InMemoryCache()
 });
 
@@ -37,6 +53,12 @@ const App = () => {
         onCompleted: data => {
             if (data?.logIn) {
                 setViewer(data.logIn);
+            }
+
+            if (data.logIn.token) {
+                sessionStorage.setItem("token", data.logIn.token);
+            } else {
+                sessionStorage.removeItem("token");
             }
         }
     });

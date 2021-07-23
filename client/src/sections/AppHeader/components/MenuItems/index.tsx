@@ -18,8 +18,9 @@ const { Item, SubMenu } = Menu;
 export const MenuItems = ({ viewer, setViewer }: Props) => {
     const [logOut] = useMutation<LogOutData>(LOG_OUT, {
         onCompleted: data => {
-            if (data && data.logOut) {
+            if (data.logOut) {
                 setViewer(data.logOut);
+                sessionStorage.removeItem("token");
                 displaySuccessNotification("You've successfully logged out!");
             }
         },
