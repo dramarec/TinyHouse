@@ -37,7 +37,7 @@ export const MenuItems = ({ viewer, setViewer }: Props) => {
     const subMenuLogin =
         viewer.id && viewer.avatar ? (
             <>
-                <SubMenu icon={<Avatar src={viewer.avatar} />}>
+                <SubMenu key="sub1" icon={<Avatar src={viewer.avatar} />}>
 
                     <Menu.Item key="/user">
                         <Link to={`/user/${viewer.id}`}>

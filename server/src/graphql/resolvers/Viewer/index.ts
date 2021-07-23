@@ -172,7 +172,6 @@ export const viewerResolvers: IResolvers = {
                 throw new Error(`Failed to log in: ${error}`);
             }
         },
-        // eslint-disable-next-line @typescript-eslint/ban-types
         logOut: (_root: undefined, _args: {}, { res }: { res: Response }): Viewer => {
             try {
                 res.clearCookie("viewer", cookieOptions);
