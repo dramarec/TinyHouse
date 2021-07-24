@@ -26,6 +26,7 @@
     // ...
 }
 ```
+_To autogenerate the TypeScript definitions_
 
 ```shell
     yarn codegen:schema
