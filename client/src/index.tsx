@@ -32,7 +32,6 @@ const authLink = setContext(async (_, { headers }) => {
 });
 
 const client = new ApolloClient({
-    // connectToDevTools: true,
     link: authLink.concat(httpLink),
     cache: new InMemoryCache()
 });
@@ -102,7 +101,11 @@ const App = () => {
                         path="/login"
                         render={props => <Login {...props} setViewer={setViewer} />}
                     />
-                    <Route exact path="/user/:id" component={User} />
+                    <Route
+                        exact
+                        path="/user/:id"
+                        render={props => <User {...props} viewer={viewer} />}
+                    />
                     <Route component={NotFound} />
 
                 </Switch>
