@@ -16,14 +16,12 @@ export const userResolvers: IResolvers = {
         ): Promise<User> => {
             try {
                 const user = await db.users.findOne({ _id: id });
-                console.log("🔥🚀 ===> user", user);
 
                 if (!user) {
                     throw new Error("user can't be found");
                 }
 
                 const viewer = await authorize(db, req);
-                console.log("🔥🚀 ===> viewer", viewer);
 
                 if (viewer?._id === user._id) {
                     user.authorized = true;
