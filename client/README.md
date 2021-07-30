@@ -26,7 +26,7 @@
     // ...
 }
 ```
-_To autogenerate the TypeScript definitions_
+_All time to autogenerate the TypeScript definitions_
 
 ```shell
     yarn codegen:schema
