@@ -229,18 +229,13 @@ export const viewerResolvers: IResolvers = {
 
                 const updateRes = await db.users.findOneAndUpdate(
                     { _id: viewer._id },
-                    {
-                        $set: {
-                            // @ts-ignore
-                            walletId:
-                                null
-                        }
-                    },
+                    // { $set: { walletId: null } },
+                    { $set: { walletId: undefined } },
                     { returnOriginal: false }
                 );
 
                 if (!updateRes.value) {
-                    throw new Error("[App] viewer could not be updated");
+                    throw new Error("viewer could not be updated");
                 }
 
                 viewer = updateRes.value;
@@ -255,7 +250,7 @@ export const viewerResolvers: IResolvers = {
             } catch (error) {
                 throw new Error(`Failed to disconnect with Stripe: ${error}`);
             }
-        },
+        }
     },
     Viewer: {
         id: (viewer: Viewer): string | undefined => {
