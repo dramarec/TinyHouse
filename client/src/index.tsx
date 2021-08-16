@@ -12,7 +12,10 @@ import {
     LogInVariables
 } from "./lib/graphql/mutations/LogIn/__generated__/LogIn";
 import { Viewer } from "./lib/types";
-import { AppHeader, Home, Host, Listing, Listings, Login, NotFound, User } from "./sections";
+import {
+    AppHeader, Home, Host, Listing, Listings, Login, NotFound, User,
+    Stripe,
+} from "./sections";
 import reportWebVitals from './reportWebVitals';
 import "./styles/index.css";
 import { AppHeaderSkeleton, ErrorBanner } from "./lib/components";
@@ -105,6 +108,11 @@ const App = () => {
                         exact
                         path="/user/:id"
                         render={props => <User {...props} viewer={viewer} />}
+                    />
+                    <Route
+                        exact
+                        path="/stripe"
+                        render={props => <Stripe {...props} viewer={viewer} setViewer={setViewer} />}
                     />
                     <Route component={NotFound} />
 
