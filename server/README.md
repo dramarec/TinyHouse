@@ -67,4 +67,7 @@ npm install googleapis
 npm install cookie-parser
 npm install -D @types/cookie-parser
 
+npm i stripe
+npm i -D @types/stripe
+
 ```
