@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import { useMutation } from '@apollo/client';
 import {
     BankOutlined,
     HomeOutlined,
@@ -13,23 +14,45 @@ import {
 import { UploadChangeParam } from "antd/lib/upload";
 import { Viewer } from "../../lib/types";
 import { ListingType } from "../../lib/graphql/globalTypes";
-import { iconColor, displayErrorMessage } from "../../lib/utils";
-
-
+import { iconColor, displayErrorMessage, displaySuccessNotification } from "../../lib/utils";
+import { HOST_LISTING } from "../../lib/graphql/mutations";
+import {
+    HostListing as HostListingData,
+    HostListingVariables
+} from "../../lib/graphql/mutations/HostListing/__generated__/HostListing";
 interface Props {
     viewer: Viewer;
 }
 
-const { Item } = Form;
+// const { Item } = Form;
 const { Content } = Layout;
 const { Text, Title } = Typography;
 
 export const Host = ({ viewer }: Props) => {
     const [imageLoading, setImageLoading] = useState(false);
     const [imageBase64Value, setImageBase64Value] = useState<string | null>(null);
+    console.log("🔥🚀 ===> Host ===> imageBase64Value", imageBase64Value);
+
+    const [form] = Form.useForm();
+
+    const [hostListing, { loading, data }] = useMutation<
+        HostListingData,
+        HostListingVariables
+    >(HOST_LISTING, {
+        onCompleted: () => {
+            displaySuccessNotification("You've successfully created your listing!");
+        },
+        onError: () => {
+            displayErrorMessage(
+                "Sorry! We weren't able to create your listing. Please try again later"
+            );
+        },
+    });
+
 
     const handleImageUpload = (info: UploadChangeParam) => {
         const { file } = info;
+        console.log("🔥🚀 ===> handleImageUpload ===> file", file);
 
         if (file.status === "uploading") {
             setImageLoading(true);
@@ -42,6 +65,33 @@ export const Host = ({ viewer }: Props) => {
                 setImageLoading(false);
             });
         }
+    };
+
+    const validateMessages = {
+        required: 'Please complete all required form fields!',
+    };
+
+    const handleHostListing = (values: any) => {
+        console.log("🔥🚀 ===> handleHostListing ===> values", values);
+        const fullAddress = `${values.address}, ${values.city}, ${values.state}, ${values.postalCode}`;
+
+        const input = {
+            ...values,
+            address: fullAddress,
+            image: imageBase64Value,
+            price: values.price * 100,
+        };
+        console.log("🔥🚀 ===> handleHostListing ===> input", input);
+
+        delete input.city;
+        delete input.state;
+        delete input.postalCode;
+
+        hostListing({
+            variables: {
+                input,
+            },
+        });
     };
 
     if (!viewer.id || !viewer.hasWallet) {
@@ -61,63 +111,176 @@ export const Host = ({ viewer }: Props) => {
         );
     }
 
+    if (loading) {
+        return (
+            <Content className="host-content">
+                <div className="host__form-header">
+                    <Title level={3} className="host__form-title">
+                        Please wait!
+                    </Title>
+                    <Text type="secondary">We're creating your listing now.</Text>
+                </div>
+            </Content>
+        );
+    }
+
+    if (data && data.hostListing) {
+        return <Redirect to={`/listing/${data.hostListing.id}`} />;
+    }
+
     return (
         <Content className="host-content">
-            <Form layout="vertical">
+            <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleHostListing}
+                validateMessages={validateMessages}
+            >
                 <div className="host__form-header">
                     <Title level={3} className="host__form-title">
                         Hi! Let's get started listing your place.
                     </Title>
                     <Text type="secondary">
-                        In this form, we'll collect some basic and additional information about your
-                        listing.
+                        In this form, we'll collect some basic and additional information
+                        about your listing.
                     </Text>
                 </div>
 
-                <Item label="Home Type">
+                <Form.Item
+                    label="Home Type"
+                    name="type"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please select a home type!',
+                        },
+                    ]}
+                >
                     <Radio.Group>
                         <Radio.Button value={ListingType.APARTMENT}>
-                            <HomeOutlined style={{ color: iconColor }} />
+                            <BankOutlined style={{ color: iconColor }} />
                             {' '}
                             <span>Apartment</span>
                         </Radio.Button>
                         <Radio.Button value={ListingType.HOUSE}>
-                            <BankOutlined style={{ color: iconColor }} />
+                            <HomeOutlined style={{ color: iconColor }} />
                             {' '}
                             <span>House</span>
                         </Radio.Button>
                     </Radio.Group>
-                </Item>
+                </Form.Item>
 
-                <Item label="Title" extra="Max character count of 45">
-                    <Input maxLength={45} placeholder="The iconic and luxurious Bel-Air mansion" />
-                </Item>
+                <Form.Item
+                    label="Max # of Guests"
+                    name="numOfGuests"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter a max number of guests!',
+                        },
+                    ]}
+                >
+                    <InputNumber min={1} placeholder="4" />
+                </Form.Item>
 
-                <Item label="Description of listing" extra="Max character count of 400">
+                <Form.Item
+                    label="Title"
+                    name="title"
+                    extra="Max character count of 45"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter a title for your listing!',
+                        },
+                    ]}
+                >
+                    <Input
+                        maxLength={45}
+                        placeholder="The iconic and luxurious Bel-Air mansion"
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    label="Description of listing"
+                    name="description"
+                    extra="Max character count of 400"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter a description for your listing!',
+                        },
+                    ]}
+                >
                     <Input.TextArea
                         rows={3}
                         maxLength={400}
-                        placeholder="Modern, clean, and iconic home of the Fresh Prince. Situated in the heart of Bel-Air, Los Angeles."
+                        placeholder="Moder, clean, and iconic home of the Fresh Prince. Situated in the heart of Bel-Air, Los Angeles"
                     />
-                </Item>
+                </Form.Item>
 
-                <Item label="Address">
-                    <Input placeholder="251 North Bristol Avenue" />
-                </Item>
+                <Form.Item
+                    label="Address"
+                    name="address"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter a address for your listing!',
+                        },
+                    ]}
+                >
+                    <Input placeholder="251 North Briston Avenue" />
+                </Form.Item>
 
-                <Item label="City/Town">
+                <Form.Item
+                    label="City/Town"
+                    name="city"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter a city (or region) for your listing!',
+                        },
+                    ]}
+                >
                     <Input placeholder="Los Angeles" />
-                </Item>
+                </Form.Item>
 
-                <Item label="State/Province">
+                <Form.Item
+                    label="State/Province"
+                    name="state"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter a state (or province) for your listing!',
+                        },
+                    ]}
+                >
                     <Input placeholder="California" />
-                </Item>
+                </Form.Item>
 
-                <Item label="Zip/Postal Code">
+                <Form.Item
+                    label="Zip/Postal Code"
+                    name="postalCode"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter a zip (or postal) code for your listing!',
+                        },
+                    ]}
+                >
                     <Input placeholder="Please enter a zip code for your listing!" />
-                </Item>
+                </Form.Item>
 
-                <Item label="Image" extra="Images have to be under 1MB in size and of type JPG or PNG">
+                <Form.Item
+                    label="Image"
+                    name="image"
+                    extra="Images have to be under 1MB in size and of type JPG or PNG"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please provide an image for your listing!',
+                        },
+                    ]}
+                >
                     <div className="host__form-image-upload">
                         <Upload
                             name="image"
@@ -137,19 +300,31 @@ export const Host = ({ viewer }: Props) => {
                             )}
                         </Upload>
                     </div>
-                </Item>
+                </Form.Item>
 
-                <Item label="Price" extra="All prices in $USD/day">
+                <Form.Item
+                    label="Price"
+                    name="price"
+                    extra="All prices in $USD/day"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please provide an image for your listing!',
+                        },
+                    ]}
+                >
                     <InputNumber min={0} placeholder="120" />
-                </Item>
+                </Form.Item>
 
-                <Item>
-                    <Button type="primary">Submit</Button>
-                </Item>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                        Submit
+                    </Button>
+                </Form.Item>
+
             </Form>
-        </Content >
+        </Content>
     );
-
 };
 
 const beforeImageUpload = (file: File) => {

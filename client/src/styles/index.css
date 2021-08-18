@@ -280,7 +280,10 @@
 }
 
 .host__form-image-upload img {
-    width: 125px;
+    /* width: 125px; */
+    width: 100%;
+    /* background-size: contain; */
+    /* background-position: 50%; */
 }
 .listing-bookings h3.ant-typography,
 .listing-bookings h4.ant-typography {
