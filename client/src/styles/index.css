@@ -279,11 +279,14 @@
     margin-bottom: 5px;
 }
 
+.ant-upload.ant-upload-select-picture-card {
+    height: 100%;
+}
+.ant-upload.ant-upload-select-picture-card > .ant-upload {
+    padding: 5px;
+}
 .host__form-image-upload img {
-    /* width: 125px; */
     width: 100%;
-    /* background-size: contain; */
-    /* background-position: 50%; */
 }
 .listing-bookings h3.ant-typography,
 .listing-bookings h4.ant-typography {

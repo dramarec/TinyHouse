@@ -31,7 +31,6 @@ const { Text, Title } = Typography;
 export const Host = ({ viewer }: Props) => {
     const [imageLoading, setImageLoading] = useState(false);
     const [imageBase64Value, setImageBase64Value] = useState<string | null>(null);
-    console.log("🔥🚀 ===> Host ===> imageBase64Value", imageBase64Value);
 
     const [form] = Form.useForm();
 
@@ -49,13 +48,19 @@ export const Host = ({ viewer }: Props) => {
         },
     });
 
-
     const handleImageUpload = (info: UploadChangeParam) => {
         const { file } = info;
-        console.log("🔥🚀 ===> handleImageUpload ===> file", file);
 
         if (file.status === "uploading") {
             setImageLoading(true);
+            return;
+        }
+
+        if (file.status === "error") {
+            displayErrorMessage(
+                "Sorry! We weren't upload your image. Please try again later"
+            );
+            setImageLoading(false);
             return;
         }
 
@@ -72,7 +77,6 @@ export const Host = ({ viewer }: Props) => {
     };
 
     const handleHostListing = (values: any) => {
-        console.log("🔥🚀 ===> handleHostListing ===> values", values);
         const fullAddress = `${values.address}, ${values.city}, ${values.state}, ${values.postalCode}`;
 
         const input = {
@@ -81,7 +85,6 @@ export const Host = ({ viewer }: Props) => {
             image: imageBase64Value,
             price: values.price * 100,
         };
-        console.log("🔥🚀 ===> handleHostListing ===> input", input);
 
         delete input.city;
         delete input.state;
@@ -127,6 +130,12 @@ export const Host = ({ viewer }: Props) => {
     if (data && data.hostListing) {
         return <Redirect to={`/listing/${data.hostListing.id}`} />;
     }
+
+    const dummyRequest = ({ onSuccess }: any) => {
+        setTimeout(() => {
+            onSuccess("ok");
+        }, 0);
+    };
 
     return (
         <Content className="host-content">
@@ -283,9 +292,11 @@ export const Host = ({ viewer }: Props) => {
                 >
                     <div className="host__form-image-upload">
                         <Upload
+                            accept="image/*"
                             name="image"
                             listType="picture-card"
                             showUploadList={false}
+                            customRequest={dummyRequest}
                             action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                             beforeUpload={beforeImageUpload}
                             onChange={handleImageUpload}
@@ -323,7 +334,7 @@ export const Host = ({ viewer }: Props) => {
                 </Form.Item>
 
             </Form>
-        </Content>
+        </Content >
     );
 };
 
@@ -356,3 +367,55 @@ const getBase64Value = (
         callback(reader.result as string);
     };
 };
+
+
+//////////////////////////////////////
+
+    // const uploadImage = async (options: any) => {
+    //     const { onSuccess, onError, file, onProgress } = options;
+
+    //     const fmData = new FormData();
+    //     const config = {
+    //         headers: {
+    //             // "content-type": "multipart/form-data",
+    //             // "Access-Control-Allow-Origin": "*",
+    //             // "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+
+    //             // 'Access-Control-Allow-Origin': '你的项目地址，用*将会带来安全问题',
+    //             'Access-Control-Allow-Origin': '*',
+    //             // 'Access-Control-Allow-Headers': '*',
+    //             // 'Access-Control-Allow-Methods': '*',
+    //             // 'Content-Type': 'application/json;charset=utf-8',
+    //         },
+    //         // onUploadProgress: event => {
+    //         //     const percent = Math.floor((event.loaded / event.total) * 100);
+    //         //     setProgress(percent);
+    //         //     if (percent === 100) {
+    //         //         setTimeout(() => setProgress(0), 1000);
+    //         //     }
+    //         //     onProgress({ percent: (event.loaded / event.total) * 100 });
+    //         // }
+    //     };
+    //     fmData.append("image", file);
+    //     try {
+    //         const res = await axios.post(
+    //             "https://jsonplaceholder.typicode.com/posts",
+    //             // "https://www.mocky.io/v2/5cc8019d300000980a055e76",
+    //             fmData,
+    //             config
+    //         );
+
+    //         onSuccess("Ok");
+    //         console.log("server res: ", res);
+    //     } catch (err) {
+    //         console.log("Eroor: ", err);
+    //         const error = new Error("Some error");
+    //         console.log("🔥🚀 ===> uploadImage ===> error", error);
+    //         onError({ err });
+    //     }
+    // };
+    // @ts-nocheck
+    // !https://github.com/ant-design/ant-design/issues/11616
+    // https://stackoverflow.com/questions/51514757/action-function-is-required-with-antd-upload-control-but-i-dont-need-it/51519603#51519603
+    // https://dejanvasic.wordpress.com/2020/09/10/ant-design-upload-to-s3-bucket-and-graphql/
+    // https://stackoverflow.com/questions/58128062/using-customrequest-in-ant-design-file-upload
