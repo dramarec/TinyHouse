@@ -1,10 +1,44 @@
 import { IResolvers } from "apollo-server-express";
 import { Request } from "express";
 import { Stripe } from "../../../lib/api";
-import { Database, Listing, Booking } from "../../../lib/types";
+import { Database, Listing, Booking, BookingsIndex } from "../../../lib/types";
 import { CreateBookingArgs } from "./types";
 import { ObjectId } from 'mongodb';
 import { authorize } from "../../../lib/utils";
+
+export const resolveBookingsIndex = (
+    bookingsIndex: BookingsIndex,
+    checkInDate: string,
+    checkOutDate: string
+): BookingsIndex => {
+    let dateCursor = new Date(checkInDate);
+    let checkOut = new Date(checkOutDate);
+    const newBookingsIndex: BookingsIndex = { ...bookingsIndex };
+
+    while (dateCursor <= checkOut) {
+        const y = dateCursor.getUTCFullYear();
+        const m = dateCursor.getUTCMonth();
+        const d = dateCursor.getUTCDate();
+
+        if (!newBookingsIndex[y]) {
+            newBookingsIndex[y] = {};
+        }
+
+        if (!newBookingsIndex[y][m]) {
+            newBookingsIndex[y][m] = {};
+        }
+
+        if (!newBookingsIndex[y][m][d]) {
+            newBookingsIndex[y][m][d] = true;
+        } else {
+            throw new Error("selected dates can't overlap dates that have already been booked");
+        }
+
+        dateCursor = new Date(dateCursor.getTime() + 86400000);
+    }
+
+    return newBookingsIndex;
+};
 
 export const bookingResolvers: IResolvers = {
     Mutation: {
@@ -38,6 +72,12 @@ export const bookingResolvers: IResolvers = {
                 if (checkOutDate < checkInDate) {
                     throw new Error("check out date can't be before check in date");
                 }
+
+                const bookingsIndex = resolveBookingsIndex(
+                    listing.bookingsIndex,
+                    checkIn,
+                    checkOut
+                );
 
                 const totalPrice =
                     listing.price * ((checkOutDate.getTime() - checkInDate.getTime()) / 86400000 + 1);
@@ -86,6 +126,7 @@ export const bookingResolvers: IResolvers = {
                         _id: listing._id
                     },
                     {
+                        $set: { bookingsIndex },
                         $push: { bookings: insertedBooking._id }
                     }
                 );
@@ -95,17 +136,20 @@ export const bookingResolvers: IResolvers = {
                 throw new Error(`Failed to create a booking: ${error}`);
             }
         },
-        Booking: {
-            id: (booking: Booking): string => {
-                return booking._id.toString();
-            },
-            listing: (
-                booking: Booking,
-                _args: {},
-                { db }: { db: Database }
-            ): Promise<Listing | null> => {
-                return db.listings.findOne({ _id: booking.listing });
-            }
-        }
     },
+    Booking: {
+        id: (booking: Booking): string => {
+            return booking._id.toString();
+        },
+        listing: (
+            booking: Booking,
+            _args: {},
+            { db }: { db: Database }
+        ): Promise<Listing | null> => {
+            return db.listings.findOne({ _id: booking.listing });
+        },
+        tenant: (booking: Booking, _args: {}, { db }: { db: Database }) => {
+            return db.users.findOne({ _id: booking.tenant });
+        }
+    }
 };
