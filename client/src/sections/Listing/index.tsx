@@ -10,7 +10,7 @@ import {
     Listing as ListingData,
     ListingVariables
 } from "../../lib/graphql/queries/Listing/__generated__/Listing";
-import { ListingCreateBooking, ListingBookings, ListingDetails } from "./components";
+import { ListingCreateBooking, ListingBookings, ListingDetails, ListingCreateBookingModal } from "./components";
 import { Viewer } from "../../lib/types";
 
 interface MatchParams {
@@ -29,6 +29,7 @@ export const Listing = ({ viewer, match }: Props & RouteComponentProps<MatchPara
     const [bookingsPage, setBookingsPage] = useState(1);
     const [checkInDate, setCheckInDate] = useState<Moment | null>(null);
     const [checkOutDate, setCheckOutDate] = useState<Moment | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const { loading, data, error } = useQuery<ListingData, ListingVariables>(LISTING, {
         variables: {
@@ -79,8 +80,21 @@ export const Listing = ({ viewer, match }: Props & RouteComponentProps<MatchPara
             host={listing.host}
             price={listing.price}
             bookingsIndex={listing.bookingsIndex}
+            setModalVisible={setModalVisible}
         />
     ) : null
+
+    const listingCreateBookingModalElement =
+        listing && checkInDate && checkOutDate ? (
+            <ListingCreateBookingModal
+                id={listing.id}
+                price={listing.price}
+                modalVisible={modalVisible}
+                checkInDate={checkInDate}
+                checkOutDate={checkOutDate}
+                setModalVisible={setModalVisible}
+            />
+        ) : null;
 
     return (
         <Content className="listings">
@@ -93,6 +107,7 @@ export const Listing = ({ viewer, match }: Props & RouteComponentProps<MatchPara
                     {ListingCreateBookingElement}
                 </Col>
             </Row>
+            {listingCreateBookingModalElement}
         </Content >
     )
 };

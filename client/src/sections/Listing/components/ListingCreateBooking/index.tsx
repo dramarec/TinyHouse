@@ -17,6 +17,8 @@ interface Props {
     viewer: Viewer;
     host: ListingData["listing"]["host"]
     bookingsIndex: ListingData["listing"]["bookingsIndex"];
+    setModalVisible: (setModalVisible: boolean) => void
+
 }
 
 export const ListingCreateBooking = ({
@@ -27,7 +29,8 @@ export const ListingCreateBooking = ({
     setCheckOutDate,
     viewer,
     host,
-    bookingsIndex
+    bookingsIndex,
+    setModalVisible
 }: Props) => {
     const bookingsIndexJSON: BookingsIndex = JSON.parse(bookingsIndex);
 
@@ -140,6 +143,7 @@ export const ListingCreateBooking = ({
                     size="large"
                     type="primary"
                     className="listing-booking__card-cta"
+                    onClick={() => setModalVisible(true)}
                 >
                     Request to book!
                 </Button>
