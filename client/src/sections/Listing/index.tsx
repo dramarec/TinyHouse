@@ -36,13 +36,23 @@ export const Listing = ({ viewer, match }: Props & RouteComponentProps<MatchPara
     const [checkOutDate, setCheckOutDate] = useState<Moment | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const { loading, data, error } = useQuery<ListingData, ListingVariables>(LISTING, {
+    const { loading, data, error, refetch } = useQuery<ListingData, ListingVariables>(LISTING, {
         variables: {
             id: match.params.id,
             bookingsPage,
             limit: PAGE_LIMIT
         }
     });
+
+    const clearBookingData = () => {
+        setCheckInDate(null);
+        setCheckOutDate(null);
+        setModalVisible(false);
+    };
+
+    const handleListingRefetch = async () => {
+        await refetch();
+    };
 
     if (loading) {
         return (
@@ -98,6 +108,8 @@ export const Listing = ({ viewer, match }: Props & RouteComponentProps<MatchPara
                 checkInDate={checkInDate}
                 checkOutDate={checkOutDate}
                 setModalVisible={setModalVisible}
+                clearBookingData={clearBookingData}
+                handleListingRefetch={handleListingRefetch}
             />
         ) : null;
 
