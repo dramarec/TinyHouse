@@ -1,7 +1,11 @@
 import { HomeOutlined } from "@ant-design/icons";
 import { Button, Divider, Modal, Typography } from "antd";
 import moment, { Moment } from "moment";
+import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { StripeCardElement } from "@stripe/stripe-js";
+
 import {
+    displayErrorMessage,
     formatListingPrice,
 } from '../../../../lib/utils';
 
@@ -28,6 +32,23 @@ export const ListingCreateBookingModal = ({
     const listingPrice = price * daysBooked;
     const tinyHouseFee = 0.05 * listingPrice;
     const totalPrice = listingPrice + tinyHouseFee;
+
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const handleCreateBooking = async () => {
+        if (!stripe || !elements) {
+            return displayErrorMessage(
+                "Sorry! We weren't able to connect with Stripe."
+            );
+        }
+   
+        const {  token: stripeToken } = await stripe.createToken(
+            elements.getElement(CardElement) as StripeCardElement,
+            {}
+        );
+        console.log(stripeToken);
+    };
 
     return (
         <Modal
@@ -76,10 +97,14 @@ export const ListingCreateBookingModal = ({
                 <Divider />
 
                 <div className="listing-booking-modal__stripe-card-section">
+                    <CardElement
+                        className="listing-booking-modal__stripe-card"
+                    />
                     <Button
                         size="large"
                         type="primary"
                         className="listing-booking-modal__cta"
+                        onClick={handleCreateBooking}
                     >
                         Book
                     </Button>

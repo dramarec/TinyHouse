@@ -10,7 +10,12 @@ import {
     Listing as ListingData,
     ListingVariables
 } from "../../lib/graphql/queries/Listing/__generated__/Listing";
-import { ListingCreateBooking, ListingBookings, ListingDetails, ListingCreateBookingModal } from "./components";
+import {
+    ListingCreateBooking,
+    ListingBookings,
+    ListingDetails,
+    ListingCreateBookingModal
+} from "./components";
 import { Viewer } from "../../lib/types";
 
 interface MatchParams {
