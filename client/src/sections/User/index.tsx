@@ -23,29 +23,36 @@ interface MatchParams {
 const { Content } = Layout;
 const PAGE_LIMIT = 4;
 
-export const User = ({ setViewer, viewer, match }: Props & RouteComponentProps<MatchParams>) => {
+export const User = ({ setViewer, viewer, match }:
+    Props & RouteComponentProps<MatchParams>
+) => {
     const [listingsPage, setListingsPage] = useState(1);
     const [bookingsPage, setBookingsPage] = useState(1);
 
     // const id =  match.params.id
 
-    const { data, loading, error, refetch } = useQuery<UserData, UserVariables>(USER, {
-        variables: {
-            id: match.params.id,
-            bookingsPage,
-            listingsPage,
-            limit: PAGE_LIMIT
-        }
-    });
+    const { data, loading, error, refetch } = useQuery<
+        UserData, UserVariables>(USER, {
+            variables: {
+                id: match.params.id,
+                bookingsPage,
+                listingsPage,
+                limit: PAGE_LIMIT
+            }
+        });
 
     const handleUserRefetch = async () => {
         await refetch();
     };
 
-    const stripeError = new URL(window.location.href).searchParams.get("stripe_error");
+    const stripeError = new URL(window.location.href)
+        .searchParams.get("stripe_error");
 
     const stripeErrorBanner = stripeError ? (
-        <ErrorBanner description="We had an issue connecting with Stripe. Please try again soon." />
+        <ErrorBanner
+            description="We had an issue connecting with Stripe. 
+                        Please try again soon."
+        />
     ) : null;
 
     if (loading) {

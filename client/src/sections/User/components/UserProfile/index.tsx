@@ -15,20 +15,25 @@ interface Props {
     viewerIsUser: boolean;
     viewer: Viewer;
     setViewer: (viewer: Viewer) => void;
-    handleUserRefetch: () => void;
+    handleUserRefetch: () => Promise<void>;
 }
 
 const stripeAuthUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${process.env.REACT_APP_S_CLIENT_ID}&scope=read_write`;
 
 const { Paragraph, Text, Title } = Typography;
 
-export const UserProfile = ({ user, viewerIsUser, viewer, setViewer, handleUserRefetch }: Props) => {
+export const UserProfile = ({
+    user, viewerIsUser, viewer, setViewer, handleUserRefetch
+}: Props) => {
     const [disconnectStripe, { loading }] = useMutation<DisconnectStripeData>(
         DISCONNECT_STRIPE,
         {
             onCompleted: data => {
                 if (data.disconnectStripe) {
-                    setViewer({ ...viewer, hasWallet: data.disconnectStripe.hasWallet });
+                    setViewer({
+                        ...viewer,
+                        hasWallet: data.disconnectStripe.hasWallet
+                    });
                     displaySuccessNotification(
                         "You've successfully disconnected from Stripe!",
                         "You'll have to reconnect with Stripe to continue to create listings."
@@ -55,7 +60,9 @@ export const UserProfile = ({ user, viewerIsUser, viewer, setViewer, handleUserR
             </Paragraph>
             <Paragraph>
                 Income Earned:{" "}
-                <Text strong>{user.income ? formatListingPrice(user.income) : `$0`}</Text>
+                <Text strong>
+                    {user.income ? formatListingPrice(user.income) : `$0`}
+                </Text>
             </Paragraph>
             <Button
                 type="primary"
@@ -67,7 +74,10 @@ export const UserProfile = ({ user, viewerIsUser, viewer, setViewer, handleUserR
             </Button>
             <Paragraph type="secondary">
                 By disconnecting, you won't be able to receive{" "}
-                <Text strong>any further payments</Text>. This will prevent users from booking
+                <Text strong>
+                    any further payments
+                </Text>
+                . This will prevent users from booking
                 listings that you might have already created.
             </Paragraph>
         </>

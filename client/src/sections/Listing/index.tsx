@@ -10,28 +10,49 @@ import {
     Listing as ListingData,
     ListingVariables
 } from "../../lib/graphql/queries/Listing/__generated__/Listing";
-import { ListingCreateBooking, ListingBookings, ListingDetails } from "./components";
+import {
+    ListingCreateBooking,
+    ListingBookings,
+    ListingDetails,
+    ListingCreateBookingModal
+} from "./components";
+import { Viewer } from "../../lib/types";
 
 interface MatchParams {
     id: string;
+}
+
+interface Props {
+    viewer: Viewer;
 }
 
 const { Content } = Layout;
 
 const PAGE_LIMIT = 3;
 
-export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
+export const Listing = ({ viewer, match }: Props & RouteComponentProps<MatchParams>) => {
     const [bookingsPage, setBookingsPage] = useState(1);
     const [checkInDate, setCheckInDate] = useState<Moment | null>(null);
     const [checkOutDate, setCheckOutDate] = useState<Moment | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    const { loading, data, error } = useQuery<ListingData, ListingVariables>(LISTING, {
+    const { loading, data, error, refetch } = useQuery<ListingData, ListingVariables>(LISTING, {
         variables: {
             id: match.params.id,
             bookingsPage,
             limit: PAGE_LIMIT
         }
     });
+
+    const clearBookingData = () => {
+        setCheckInDate(null);
+        setCheckOutDate(null);
+        setModalVisible(false);
+    };
+
+    const handleListingRefetch = async () => {
+        await refetch();
+    };
 
     if (loading) {
         return (
@@ -40,7 +61,6 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
             </Content>
         );
     }
-
 
     if (error) {
         return (
@@ -52,64 +72,7 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
     }
 
     const listing = data?.listing;
-    // const listingBookings = listing?.bookings;
-    const listingBookings = {
-        total: 4,
-        result: [
-            {
-                id: "5daa530eefc64b001767247c",
-                tenant: {
-                    id: "117422637055829818290",
-                    name: "User X",
-                    avatar:
-                        "https://lh3.googleusercontent.com/a-/AAuE7mBL9NpzsFA6mGSC8xIIJfeK4oTeOJpYvL-gAyaB=s100",
-                    __typename: "User"
-                },
-                checkIn: "2019-10-29",
-                checkOut: "2019-10-31",
-                __typename: "Booking"
-            },
-            {
-                id: "5daa530eefc64b001767247d",
-                tenant: {
-                    id: "117422637055829818290",
-                    name: "User X",
-                    avatar:
-                        "https://lh3.googleusercontent.com/a-/AAuE7mBL9NpzsFA6mGSC8xIIJfeK4oTeOJpYvL-gAyaB=s100",
-                    __typename: "User"
-                },
-                checkIn: "2019-11-01",
-                checkOut: "2019-11-03",
-                __typename: "Booking"
-            },
-            {
-                id: "5daa530eefc64b001767247g",
-                tenant: {
-                    id: "117422637055829818290",
-                    name: "User X",
-                    avatar:
-                        "https://lh3.googleusercontent.com/a-/AAuE7mBL9NpzsFA6mGSC8xIIJfeK4oTeOJpYvL-gAyaB=s100",
-                    __typename: "User"
-                },
-                checkIn: "2019-11-05",
-                checkOut: "2019-11-09",
-                __typename: "Booking"
-            },
-            {
-                id: "5daa530eefc64b001767247f",
-                tenant: {
-                    id: "117422637055829818290",
-                    name: "User X",
-                    avatar:
-                        "https://lh3.googleusercontent.com/a-/AAuE7mBL9NpzsFA6mGSC8xIIJfeK4oTeOJpYvL-gAyaB=s100",
-                    __typename: "User"
-                },
-                checkIn: "2019-11-10",
-                checkOut: "2019-11-11",
-                __typename: "Booking"
-            }
-        ]
-    } as any;
+    const listingBookings = listing?.bookings;
 
     const listingDetailsElement = listing ? <ListingDetails listing={listing} /> : null;
 
@@ -124,13 +87,31 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
 
     const ListingCreateBookingElement = listing ? (
         <ListingCreateBooking
-            price={listing.price}
+            viewer={viewer}
             checkInDate={checkInDate}
             checkOutDate={checkOutDate}
             setCheckInDate={setCheckInDate}
             setCheckOutDate={setCheckOutDate}
+            host={listing.host}
+            price={listing.price}
+            bookingsIndex={listing.bookingsIndex}
+            setModalVisible={setModalVisible}
         />
     ) : null
+
+    const listingCreateBookingModalElement =
+        listing && checkInDate && checkOutDate ? (
+            <ListingCreateBookingModal
+                id={listing.id}
+                price={listing.price}
+                modalVisible={modalVisible}
+                checkInDate={checkInDate}
+                checkOutDate={checkOutDate}
+                setModalVisible={setModalVisible}
+                clearBookingData={clearBookingData}
+                handleListingRefetch={handleListingRefetch}
+            />
+        ) : null;
 
     return (
         <Content className="listings">
@@ -143,6 +124,7 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
                     {ListingCreateBookingElement}
                 </Col>
             </Row>
+            {listingCreateBookingModalElement}
         </Content >
     )
 };
