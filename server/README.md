@@ -71,3 +71,11 @@ npm i stripe
 npm i -D @types/stripe
 
 ```
+[`compression`](https://github.com/expressjs/compression)
+
+```
+    npm i compression
+
+    npm i -D @types/compression
+
+```
